@@ -1,58 +1,68 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const patientSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: true
+    required: true,
   },
   lastName: {
     type: String,
-    required: true
+    required: true,
   },
   dateOfBirth: {
     type: Date,
-    required: true
+    required: true,
   },
   gender: {
     type: String,
-    enum: ['Male', 'Female', 'Other'],
-    required: true
+    enum: ["Male", "Female", "Other"],
+    required: true,
   },
   contactNumber: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   address: {
     street: String,
     city: String,
     state: String,
-    zipCode: String
+    zipCode: String,
   },
   healthConditions: [String],
-  medications: [{
-    name: String,
-    dosage: String,
-    frequency: String
-  }],
-  appointments: [{
-    date: Date,
-    doctor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Doctor'
+  medications: [
+    {
+      name: String,
+      dosage: String,
+      frequency: String,
+      issuedOn: Date,
     },
-    notes: String
-  }],
-  adherenceData: [{
-    date: Date,
-    adherencePercentage: Number
-  }]
+  ],
+  appointments: [
+    {
+      date: Date,
+      doctor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Doctor",
+      },
+      notes: String,
+    },
+  ],
+  reminder: [
+    {
+      medicine: String,
+      timing: [String],
+      startDate: Date,
+      endDate: Date,
+      declinedOn: [Date],
+    },
+  ],
 });
 
-const Patient = mongoose.model('Patient', patientSchema);
+const Patient = mongoose.model("Patient", patientSchema);
 
 module.exports = Patient;
