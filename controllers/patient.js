@@ -1,4 +1,8 @@
 const Patient = require("../models/patient");
+const constants = require("../constant/index");
+
+const { PATIENT_CREATED, PATIENT_DELETED, PATIENT_NOT_FOUND, PATIENT_UPDATED } =
+  constants;
 
 const getAll = async (req, res) => {
   try {
@@ -13,7 +17,7 @@ const getById = async (req, res) => {
   try {
     const patients = await Patient.findById(req.params.id);
     if (!patients) {
-      return res.status(404).send("Patient not found");
+      return res.status(404).send(PATIENT_NOT_FOUND);
     }
     return res.status(200).json(patients);
   } catch (e) {
@@ -26,7 +30,7 @@ const create = async (req, res) => {
     const patientData = { ...req.body };
     const patient = new Patient(patientData);
     await patient.save();
-    return res.status(201).send("Patient created");
+    return res.status(201).send(PATIENT_CREATED);
   } catch (e) {
     return res.status(500).send(e);
   }
@@ -37,9 +41,9 @@ const updateById = async (req, res) => {
     const updatedData = { ...req.body };
     const update = await Patient.updateOne({ _id: req.params.id }, updatedData);
     if (!update) {
-      return res.status(404).send("Patient not found");
+      return res.status(404).send(PATIENT_NOT_FOUND);
     }
-    return res.status(201).send("Patient updated");
+    return res.status(201).send(PATIENT_UPDATED);
   } catch (e) {
     return res.status(500).send(e);
   }
@@ -49,9 +53,9 @@ const deleteById = async (req, res) => {
   try {
     const deletePatient = await Patient.deleteOne({ _id: req.params.id });
     if (!deletePatient) {
-      return res.status(404).send("Patient not found");
+      return res.status(404).send(PATIENT_NOT_FOUND);
     }
-    return res.status(200).send("Patient Deleted");
+    return res.status(200).send(PATIENT_DELETED);
   } catch (e) {
     return res.status(500).send(e);
   }
