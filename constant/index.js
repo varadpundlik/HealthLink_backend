@@ -1,5 +1,5 @@
 const constant = {
-  message: "Hello World",
+  message: "Hello",
 
   PATIENT_NOT_FOUND: "Patient not found",
   PATIENT_CREATED: "Patient created successfully",
