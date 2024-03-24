@@ -31,7 +31,7 @@ const register = async (req, res) => {
 
     res.status(201).json({ _id: user.id, email: user.email });
   } catch (error) {
-    res.status(400).send("User data is not valid");
+    res.status(400).send("User data is not valid"+error.message);
   }
 };
 
@@ -65,7 +65,7 @@ const login = async (req, res) => {
       throw new Error("Email or password is not valid");
     }
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error"+error.message);
   }
 };
 
@@ -74,7 +74,7 @@ const currentUser = async (req, res) => {
   try {
     res.json(req.user);
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error"+error.message);
   }
 };
 
