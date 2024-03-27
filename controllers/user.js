@@ -81,7 +81,7 @@ const currentUser = async (req, res) => {
 
 const listDoctors = async (req, res) => {
   try {
-    const doctors = await Doctor.find({}, "name address email specialization");
+    const doctors = await Doctor.find({}, " id name address email specialization");
     res.json(doctors);
   } catch (error) {
     res.status(500).send("Internal Server Error");
