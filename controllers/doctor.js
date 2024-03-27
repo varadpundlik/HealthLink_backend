@@ -28,7 +28,7 @@ const registerDoctor = async (req, res) => {
 
     res.status(201).json({ _id: doctor.id, email: doctor.email });
   } catch (error) {
-    res.status(400).send("Doctor data is not valid");
+    res.status(400).send("Doctor data is not valid " + error.message);
   }
 };
 
@@ -62,7 +62,7 @@ const loginDoctor = async (req, res) => {
       throw new Error("Email or password is not valid");
     }
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error "+error.message);
   }
 };
 
@@ -70,7 +70,7 @@ const currentDoctor = async (req, res) => {
   try {
     res.json(req.user);
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error "+error.message);
   }
 };
 
