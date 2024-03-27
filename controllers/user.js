@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const config = require("../config");
 const User = require("../models/user");
+const Doctor=require("../models/doctor");
 const jwt=require("jsonwebtoken");
 const constants = require("../constant/index");
 
@@ -78,4 +79,15 @@ const currentUser = async (req, res) => {
   }
 };
 
-module.exports = { register, login, currentUser };
+const listDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}, " id name address email specialization");
+    res.json(doctors);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+};
+
+
+
+module.exports = { register, login, currentUser,listDoctors };
