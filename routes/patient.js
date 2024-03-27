@@ -10,6 +10,10 @@ PatientRouter.get("/:id", PatientController.getById);
 
 PatientRouter.post("/", PatientController.create);
 
+PatientRouter.post("/:id/appointment", PatientController.bookAppointment);
+
+PatientRouter.post("/:id/medication", PatientController.addMedication);
+
 PatientRouter.put("/:id", PatientController.updateById);
 
 PatientRouter.delete("/:id", PatientController.deleteById);
