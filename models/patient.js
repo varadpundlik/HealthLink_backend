@@ -38,6 +38,7 @@ const patientSchema = new mongoose.Schema({
     {
       name: String,
       dosage: String,
+      days: Number,
       frequency: String,
       issuedOn: Date,
     },

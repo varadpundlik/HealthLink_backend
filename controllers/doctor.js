@@ -5,8 +5,8 @@ const config = require("../config");
 
 const registerDoctor = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
+    const { username, email, password, name, address, specialization } = req.body;
+    if (!username || !email || !password || !name || !address || !specialization) {
       res.status(400);
       throw new Error("All fields are mandatory!");
     }
@@ -24,13 +24,17 @@ const registerDoctor = async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      name,
+      address,
+      specialization
     });
 
     res.status(201).json({ _id: doctor.id, email: doctor.email });
   } catch (error) {
-    res.status(400).send("Doctor data is not valid");
+    res.status(400).send("Doctor data is not valid " + error.message);
   }
 };
+
 
 const loginDoctor = async (req, res) => {
   try {
@@ -62,7 +66,7 @@ const loginDoctor = async (req, res) => {
       throw new Error("Email or password is not valid");
     }
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error "+error.message);
   }
 };
 
@@ -70,7 +74,7 @@ const currentDoctor = async (req, res) => {
   try {
     res.json(req.user);
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Internal Server Error "+error.message);
   }
 };
 

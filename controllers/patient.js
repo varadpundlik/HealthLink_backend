@@ -36,6 +36,38 @@ const create = async (req, res) => {
   }
 };
 
+const bookAppointment = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).send(PATIENT_NOT_FOUND);
+    }
+    const appointment = { ...req.body };
+    patient.appointments.push(appointment);
+    await patient.save();
+    return res.status(201).send("Appointment booked successfully");
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
+const addMedication = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).send(PATIENT_NOT_FOUND);
+    }
+    const medication  = req.body.medication;
+    medication.map((med) => {
+    patient.medications.push(med);
+    });
+    await patient.save();
+    return res.status(201).send("Medication added successfully");
+  } catch (e) {
+    return res.status(500).send(e);
+  }
+};
+
 const updateById = async (req, res) => {
   try {
     const updatedData = { ...req.body };
@@ -61,4 +93,4 @@ const deleteById = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, updateById, deleteById };
+module.exports = { getAll, getById, create, bookAppointment, addMedication, updateById, deleteById };
