@@ -5,8 +5,8 @@ const config = require("../config");
 
 const registerDoctor = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
+    const { username, email, password, name, address, specialization } = req.body;
+    if (!username || !email || !password || !name || !address || !specialization) {
       res.status(400);
       throw new Error("All fields are mandatory!");
     }
@@ -24,6 +24,9 @@ const registerDoctor = async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      name,
+      address,
+      specialization
     });
 
     res.status(201).json({ _id: doctor.id, email: doctor.email });
@@ -31,6 +34,7 @@ const registerDoctor = async (req, res) => {
     res.status(400).send("Doctor data is not valid");
   }
 };
+
 
 const loginDoctor = async (req, res) => {
   try {
