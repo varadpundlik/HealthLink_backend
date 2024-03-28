@@ -57,7 +57,7 @@ const login = async (req, res) => {
         },
 
       },config.Access_token_secret,
-        {expiresIn: "15m"}
+        {expiresIn: "30d"}
       );
       
       res.status(200).json({ accessToken });
