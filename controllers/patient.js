@@ -28,7 +28,7 @@ const getById = async (req, res) => {
 const create = async (req, res) => {
   try {
     const patientData = { ...req.body };
-    patientData.user= req.user.id;
+    patientData.user = req.user.id;
     const patient = new Patient(patientData);
     await patient.save();
     return res.status(201).send(PATIENT_CREATED);
@@ -39,18 +39,21 @@ const create = async (req, res) => {
 
 const bookAppointment = async (req, res) => {
   try {
-    const patient = await Patient.findById(req.user.id);
+    const patient = await Patient.findOne({ user: req.user.id });
     if (!patient) {
-      return res.status(404).send(PATIENT_NOT_FOUND);
+      return res.status(404).send("Patient not found");
     }
+
     const appointment = { ...req.body };
     patient.appointments.push(appointment);
     await patient.save();
+
     return res.status(201).send("Appointment booked successfully");
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
+
 
 const addMedication = async (req, res) => {
   try {
@@ -58,9 +61,9 @@ const addMedication = async (req, res) => {
     if (!patient) {
       return res.status(404).send(PATIENT_NOT_FOUND);
     }
-    const medication  = req.body.medication;
+    const medication = req.body.medication;
     medication.map((med) => {
-    patient.medications.push(med);
+      patient.medications.push(med);
     });
     await patient.save();
     return res.status(201).send("Medication added successfully");
@@ -87,9 +90,16 @@ const addTest = async (req, res) => {
     patient.test_results.push(newTestResult);
     await patient.save();
 
-    res.status(201).json({ message: "Test result added successfully", testResult: newTestResult });
+    res
+      .status(201)
+      .json({
+        message: "Test result added successfully",
+        testResult: newTestResult,
+      });
   } catch (error) {
-    res.status(500).json({ message: "Error adding test result", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error adding test result", error: error.message });
   }
 };
 
@@ -118,4 +128,13 @@ const deleteById = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, bookAppointment, addMedication, updateById, deleteById,addTest };
+module.exports = {
+  getAll,
+  getById,
+  create,
+  bookAppointment,
+  addMedication,
+  updateById,
+  deleteById,
+  addTest,
+};
