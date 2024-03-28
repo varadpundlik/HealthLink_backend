@@ -28,6 +28,7 @@ const getById = async (req, res) => {
 const create = async (req, res) => {
   try {
     const patientData = { ...req.body };
+    patientData.user= req.user.id;
     const patient = new Patient(patientData);
     await patient.save();
     return res.status(201).send(PATIENT_CREATED);

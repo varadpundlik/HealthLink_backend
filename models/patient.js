@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const user = require("./user");
 
 const patientSchema = new mongoose.Schema({
   firstName: {
@@ -60,6 +61,17 @@ const patientSchema = new mongoose.Schema({
       startDate: Date,
       endDate: Date,
       declinedOn: [Date],
+    },
+  ],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  test_results: [
+    {
+      test_name: String,
+      test_date: Date,
+      test_result: String,
     },
   ],
 });
