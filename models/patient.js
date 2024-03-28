@@ -38,7 +38,6 @@ const patientSchema = new mongoose.Schema({
     {
       name: String,
       dosage: String,
-      days: Number,
       frequency: String,
       issuedOn: Date,
     },
@@ -65,5 +64,4 @@ const patientSchema = new mongoose.Schema({
 });
 
 const Patient = mongoose.model("Patient", patientSchema);
-
 module.exports = Patient;
