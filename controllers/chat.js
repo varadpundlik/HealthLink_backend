@@ -1,20 +1,27 @@
 const WebSocket = require("ws");
 const Message = require("../models/message"); // Assuming you have a Mongoose model for chats
 
+
+const getChatHistory = async (req, res) => {
+  try {
+    const chatHistory = await Message.find({
+      $or: [
+        { sender: req.user.id, receiver: req.params.receiverId },
+        { sender: req.params.receiverId, receiver: req.user.id },
+      ],
+    });
+    res.status(200).json(chatHistory);
+  } catch (error) {
+    res.status(500).send("Error retrieving chat history");
+  }
+}
+
 // WebSocket server instance
 const wss = new WebSocket.Server({ noServer: true });
 
 // Function to handle WebSocket connections and messages
 wss.on("connection", async (ws) => {
   console.log("WebSocket connection established");
-
-  
-  try {
-    const chatHistory = await Message.find().sort({ timestamp: 1 }).lean();
-    ws.send(JSON.stringify({ type: "chatHistory", data: chatHistory }));
-  } catch (error) {
-    console.error("Error retrieving chat history:", error);
-  }
 
   ws.on("message", async (data) => {
     try {
@@ -52,4 +59,4 @@ function handleUpgrade(request, socket, head) {
   });
 }
 
-module.exports = { handleUpgrade };
+module.exports = { handleUpgrade, getChatHistory };
