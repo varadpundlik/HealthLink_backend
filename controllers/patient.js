@@ -39,7 +39,7 @@ const create = async (req, res) => {
 
 const bookAppointment = async (req, res) => {
   try {
-    const patient = await Patient.findById(req.params.id);
+    const patient = await Patient.findById(req.user.id);
     if (!patient) {
       return res.status(404).send(PATIENT_NOT_FOUND);
     }

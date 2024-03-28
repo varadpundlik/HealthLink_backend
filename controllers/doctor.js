@@ -88,6 +88,8 @@ const getAppointment = async (req, res) => {
           appointments.push({
             appointmentId: appointment._id,
             date: appointment.date,
+            isOnline: appointment.isOnline,
+            duration: appointment.duration,
             patientId: patient._id,
             patientName: patient.firstName + " " + patient.lastName,
             patientEmail: patient.email,
