@@ -5,8 +5,16 @@ const Message = require("../models/message"); // Assuming you have a Mongoose mo
 const wss = new WebSocket.Server({ noServer: true });
 
 // Function to handle WebSocket connections and messages
-wss.on("connection", (ws) => {
+wss.on("connection", async (ws) => {
   console.log("WebSocket connection established");
+
+  
+  try {
+    const chatHistory = await Message.find().sort({ timestamp: 1 }).lean();
+    ws.send(JSON.stringify({ type: "chatHistory", data: chatHistory }));
+  } catch (error) {
+    console.error("Error retrieving chat history:", error);
+  }
 
   ws.on("message", async (data) => {
     try {
