@@ -68,6 +68,30 @@ const addMedication = async (req, res) => {
     return res.status(500).send(e);
   }
 };
+const addTest = async (req, res) => {
+  try {
+    const patientId = req.params.patientId;
+    const { test_name, test_date, test_result } = req.body;
+
+    const newTestResult = {
+      test_name,
+      test_date,
+      test_result,
+    };
+
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    patient.test_results.push(newTestResult);
+    await patient.save();
+
+    res.status(201).json({ message: "Test result added successfully", testResult: newTestResult });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding test result", error: error.message });
+  }
+};
 
 const updateById = async (req, res) => {
   try {
@@ -94,4 +118,4 @@ const deleteById = async (req, res) => {
   }
 };
 
-module.exports = { getAll, getById, create, bookAppointment, addMedication, updateById, deleteById };
+module.exports = { getAll, getById, create, bookAppointment, addMedication, updateById, deleteById,addTest };

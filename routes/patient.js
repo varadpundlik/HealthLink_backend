@@ -14,6 +14,7 @@ PatientRouter.post("/", validatetoken, PatientController.create);
 PatientRouter.post("/:id/appointment", PatientController.bookAppointment);
 
 PatientRouter.post("/:id/medication", PatientController.addMedication);
+PatientRouter.post("/:id/test", PatientController.addTest);
 
 PatientRouter.put("/:id", PatientController.updateById);
 
