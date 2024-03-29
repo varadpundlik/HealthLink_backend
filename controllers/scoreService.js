@@ -1,4 +1,5 @@
 const Patient = require("../models/patient");
+const axios = require("axios");
 
 const getEngagementScore = async (req, res) => {
   try {
@@ -19,15 +20,15 @@ const getEngagementScore = async (req, res) => {
       calories.push(element.caloriesIntake);
     });
     const data = {
-      medicines: medicines,
-      water: water,
-      water_threshold: patient.analytics_thresholds.water,
-      sleep: sleep,
-      sleep_threshold: patient.analytics_thresholds.sleep,
-      steps: steps,
-      steps_threshold: patient.analytics_thresholds.steps,
-      calories: calories,
-      calories_threshold: patient.analytics_thresholds.calories,
+      medicineArray: medicines,
+      waterArray: water,
+      watersthreshold: patient.analytics_thresholds.water,
+      sleepArray: sleep,
+      sleepthreshold: patient.analytics_thresholds.sleep,
+      stepsArray: steps,
+      stepthreshold: patient.analytics_thresholds.steps,
+      caloriesArray: calories,
+      caloriessthreshold: patient.analytics_thresholds.calories,
     };
     axios
       .post("https://techfista.onrender/com/generate_engagement_score", data)
