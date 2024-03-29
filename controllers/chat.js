@@ -56,7 +56,7 @@ wss.on("connection", async (ws, request) => {
         wss.clients.forEach((client) => {
           const clientSenderId = clientsMap.get(client);
           if (client.readyState === WebSocket.OPEN && clientSenderId === receiverId) {
-            client.send(JSON.stringify(chatMessage));
+            client.send(chatMessage.message);
             console.log("Message sent to:", clientSenderId);
           }
         });
