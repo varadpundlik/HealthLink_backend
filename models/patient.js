@@ -73,7 +73,7 @@ const patientSchema = new mongoose.Schema({
       test_result: String,
     },
   ],
-  anaytics:[
+  anaytics: [
     {
       date: Date,
       heartRate: Number,
@@ -93,8 +93,52 @@ const patientSchema = new mongoose.Schema({
       messageCount: Number,
       medicineTaken: Number,
       medicineMissed: Number,
-    }
-  ]
+    },
+  ],
+  streaks: {
+    medicine: {
+      type: Number,
+      default: 0,
+    },
+    water: {
+      type: Number,
+      default: 0,
+    },
+    steps: {
+      type: Number,
+      default: 0,
+    },
+    sleep: {
+      type: Number,
+      default: 0,
+    },
+    calories: {
+      type: Number,
+      default: 0,
+    },
+  },
+  maxStraks: {
+    medicine: {
+      type: Number,
+      default: 0,
+    },
+    water: {
+      type: Number,
+      default: 0,
+    },
+    steps: {
+      type: Number,
+      default: 0,
+    },
+    sleep: {
+      type: Number,
+      default: 0,
+    },
+    calories: {
+      type: Number,
+      default: 0,
+    },
+  },
 });
 
 const Patient = mongoose.model("Patient", patientSchema);

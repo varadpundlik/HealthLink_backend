@@ -200,14 +200,29 @@ const addAnalytics = async (req, res) => {
   }
 };
 
+const getPatientByToken = async (req, res) => {
+  try {
+    const patient = await Patient.findOne({ user: req.user.id });
+    if (!patient) {
+      return res.status(404).send(PATIENT_NOT_FOUND);
+    }
+    return res.status(200).json(patient);
+  }
+  catch (e) {
+    return res.status(500).send(e);
+  }
+}
+
+
 module.exports = {
   getAll,
   getById,
+  getPatientByToken,
   create,
   bookAppointment,
   addMedication,
   updateById,
   deleteById,
   addTest,
-  addAnalytics,
+  getPatientByToken,
 };
