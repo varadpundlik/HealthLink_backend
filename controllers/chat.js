@@ -18,29 +18,39 @@ const getChatHistory = async (req, res) => {
 
 // WebSocket server instance
 const wss = new WebSocket.Server({ noServer: true });
-
+const clientsMap = new Map();
 // Function to handle WebSocket connections and messages
-wss.on("connection", async (ws) => {
+wss.on("connection", async (ws, request) => {
   console.log("WebSocket connection established");
 
   ws.on("message", async (data) => {
     try {
       const messageData = JSON.parse(data);
-      // Save the message to the database
-      const chatMessage = new Message({
-        sender: messageData.sender,
-        receiver: messageData.receiver,
-        message: messageData.message,
-        timestamp: new Date(),
-      });
-      await chatMessage.save();
-      // Broadcast the message to the sender and receiver
-      ws.send(JSON.stringify(chatMessage));
-      const receiverSocket = Array.from(wss.clients).find(
-        (client) => client.id === messageData.receiver
-      );
-      if (receiverSocket) {
-        receiverSocket.send(JSON.stringify(chatMessage));
+      const { type, senderId, receiverId, message } = messageData;
+
+      if (type === "init") {
+        // Store the WebSocket connection and its associated sender ID
+        clientsMap.set(ws, senderId);
+        console.log("Client connected with ID:", senderId);
+      } else if (type === "chat") {
+        // Save the message to the database
+        const chatMessage = new Message({
+          sender: senderId,
+          receiver: receiverId,
+          message: message,
+          timestamp: new Date(),
+        });
+        await chatMessage.save();
+
+        // Broadcast the message to the sender and receiver
+        ws.send(JSON.stringify(chatMessage));
+        wss.clients.forEach((client) => {
+          const clientSenderId = clientsMap.get(client);
+          if (client.readyState === WebSocket.OPEN && clientSenderId === receiverId) {
+            client.send(JSON.stringify(chatMessage));
+            console.log("Message sent to:", clientSenderId);
+          }
+        });
       }
     } catch (error) {
       console.error("Error handling WebSocket message:", error);
@@ -49,8 +59,11 @@ wss.on("connection", async (ws) => {
 
   ws.on("close", () => {
     console.log("WebSocket connection closed");
+    // Remove the closed WebSocket connection from the map
+    clientsMap.delete(ws);
   });
 });
+
 
 // Function to handle WebSocket upgrade requests
 function handleUpgrade(request, socket, head) {
