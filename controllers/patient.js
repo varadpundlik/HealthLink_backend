@@ -211,10 +211,10 @@ const addAnalytics = async (req, res) => {
       ...req.body,
     };
 
-    // Check if patient.analytics exists, if not, initialize it
-    if (!patient.analytics) {
-      patient.analytics = [];
-    }
+    // // Check if patient.analytics exists, if not, initialize it
+    // if (!patient.analytics) {
+    //   patient.analytics = [];
+    // }
 
     patient.analytics.push(newAnalytics);
 
@@ -223,16 +223,19 @@ const addAnalytics = async (req, res) => {
       patient.analytics,
       req.user.id
     );
+    console.log("--------------")
+    console.log(currentStreaks)
+    console.log(maxStreaks)
 
-    // Initialize patient streaks if undefined
-    if (!patient.streaks) {
-      patient.streaks = {};
-    }
+    // // Initialize patient streaks if undefined
+    // if (!patient.streaks) {
+    //   patient.streaks = {};
+    // }
 
-    // Initialize patient max streaks if undefined
-    if (!patient.maxStreaks) {
-      patient.maxStreaks = {};
-    }
+    // // Initialize patient max streaks if undefined
+    // if (!patient.maxStreaks) {
+    //   patient.maxStreaks = {};
+    // }
 
     // Update patient streaks
     patient.streaks.medicine = currentStreaks.medicine;

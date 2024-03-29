@@ -117,7 +117,7 @@ const patientSchema = new mongoose.Schema({
       default: 0,
     },
   },
-  maxStraks: {
+  maxStreaks: {
     medicine: {
       type: Number,
       default: 0,
