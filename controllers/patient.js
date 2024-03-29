@@ -102,11 +102,11 @@ const addTest = async (req, res) => {
 
 const updateById = async (req, res) => {
   try {
-    const { id } = req.params;
+    
     const { age, contactNumber, healthConditions} = req.body; 
     const updateFields = { age, contactNumber, healthConditions };
 
-    const update = await Patient.findByIdAndUpdate(id, updateFields, { new: true });
+    const update = await Patient.findByIdAndUpdate(req.params.id, updateFields, { new: true });
 
     if (!update) {
       return res.status(404).send(PATIENT_NOT_FOUND);
