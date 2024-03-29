@@ -23,6 +23,14 @@ const wss = new WebSocket.Server({ noServer: true });
 wss.on("connection", async (ws) => {
   console.log("WebSocket connection established");
 
+  const initialMessage = await new Promise((resolve) => {
+    ws.once("message", resolve);
+  });
+  const { clientId } = JSON.parse(initialMessage);
+
+  // Assign client id to the WebSocket instance
+  ws.clientId = clientId;
+
   ws.on("message", async (data) => {
     try {
       const messageData = JSON.parse(data);
@@ -37,7 +45,7 @@ wss.on("connection", async (ws) => {
       // Broadcast the message to the sender and receiver
       ws.send(JSON.stringify(chatMessage));
       const receiverSocket = Array.from(wss.clients).find(
-        (client) => client.id === messageData.receiver
+        (client) => client.clientId === messageData.receiver
       );
       if (receiverSocket) {
         receiverSocket.send(JSON.stringify(chatMessage));
