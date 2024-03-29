@@ -10,8 +10,8 @@ const patientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  dateOfBirth: {
-    type: Date,
+  age: {
+    type: Number,
     required: true,
   },
   gender: {
