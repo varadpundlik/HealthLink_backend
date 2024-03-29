@@ -73,7 +73,7 @@ const patientSchema = new mongoose.Schema({
       test_result: String,
     },
   ],
-  anaytics: [
+  analytics: [
     {
       date: Date,
       heartRate: Number,
