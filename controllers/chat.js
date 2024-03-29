@@ -20,36 +20,36 @@ const getChatHistory = async (req, res) => {
 const wss = new WebSocket.Server({ noServer: true });
 
 // Function to handle WebSocket connections and messages
-wss.on("connection", async (ws) => {
+wss.on("connection", async (ws, request) => {
   console.log("WebSocket connection established");
 
-  const initialMessage = await new Promise((resolve) => {
-    ws.once("message", resolve);
-  });
-  const { clientId } = JSON.parse(initialMessage);
-
-  // Assign client id to the WebSocket instance
-  ws.clientId = clientId;
+  // Extract sender and receiver IDs from query parameters
+  const urlParams = new URLSearchParams(request.url.split("?")[1]);
+  const senderId = urlParams.get("sender");
+  const receiverId = urlParams.get("receiver");
 
   ws.on("message", async (data) => {
     try {
       const messageData = JSON.parse(data);
       // Save the message to the database
       const chatMessage = new Message({
-        sender: messageData.sender,
-        receiver: messageData.receiver,
+        sender: senderId,
+        receiver: receiverId,
         message: messageData.message,
         timestamp: new Date(),
       });
       await chatMessage.save();
       // Broadcast the message to the sender and receiver
       ws.send(JSON.stringify(chatMessage));
-      const receiverSocket = Array.from(wss.clients).find(
-        (client) => client.clientId === messageData.receiver
-      );
-      if (receiverSocket) {
-        receiverSocket.send(JSON.stringify(chatMessage));
-      }
+      // Find the receiver's WebSocket and send the message
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN && client !== ws) {
+          const clientParams = new URLSearchParams(client.upgradeReq.url.split("?")[1]);
+          if (clientParams.get("sender") === receiverId && clientParams.get("receiver") === senderId) {
+            client.send(JSON.stringify(chatMessage));
+          }
+        }
+      });
     } catch (error) {
       console.error("Error handling WebSocket message:", error);
     }
@@ -59,6 +59,7 @@ wss.on("connection", async (ws) => {
     console.log("WebSocket connection closed");
   });
 });
+
 
 // Function to handle WebSocket upgrade requests
 function handleUpgrade(request, socket, head) {
