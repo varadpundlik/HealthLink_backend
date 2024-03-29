@@ -18,42 +18,40 @@ const getChatHistory = async (req, res) => {
 
 // WebSocket server instance
 const wss = new WebSocket.Server({ noServer: true });
-
+const clientsMap = new Map();
 // Function to handle WebSocket connections and messages
 wss.on("connection", async (ws, request) => {
   console.log("WebSocket connection established");
 
-  // Extract sender and receiver IDs from query parameters
-  const urlParams = new URLSearchParams(request.url.split("?")[1]);
-  const senderId = urlParams.get("sender");
-  console.log("sender",senderId);
-  const receiverId = urlParams.get("receiver");
-  console.log("receiver",receiverId);
-
   ws.on("message", async (data) => {
     try {
       const messageData = JSON.parse(data);
-      // Save the message to the database
-      const chatMessage = new Message({
-        sender: senderId,
-        receiver: receiverId,
-        message: messageData.message,
-        timestamp: new Date(),
-      });
-      console.log(chatMessage);
-      await chatMessage.save();
-      // Broadcast the message to the sender and receiver
-      ws.send(JSON.stringify(chatMessage));
-      // Find the receiver's WebSocket and send the message
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN && client !== ws) {
-          const clientParams = new URLSearchParams(client.upgradeReq.url.split("?")[1]);
-          if (clientParams.get("sender") === receiverId && clientParams.get("receiver") === senderId) {
+      const { type, senderId, receiverId, message } = messageData;
+
+      if (type === "init") {
+        // Store the WebSocket connection and its associated sender ID
+        clientsMap.set(ws, senderId);
+        console.log("Client connected with ID:", senderId);
+      } else if (type === "chat") {
+        // Save the message to the database
+        const chatMessage = new Message({
+          sender: senderId,
+          receiver: receiverId,
+          message: message,
+          timestamp: new Date(),
+        });
+        await chatMessage.save();
+
+        // Broadcast the message to the sender and receiver
+        ws.send(JSON.stringify(chatMessage));
+        wss.clients.forEach((client) => {
+          const clientSenderId = clientsMap.get(client);
+          if (client.readyState === WebSocket.OPEN && clientSenderId === receiverId) {
             client.send(JSON.stringify(chatMessage));
-            console.log("message sent to",clientParams.get("sender"));
+            console.log("Message sent to:", clientSenderId);
           }
-        }
-      });
+        });
+      }
     } catch (error) {
       console.error("Error handling WebSocket message:", error);
     }
@@ -61,6 +59,8 @@ wss.on("connection", async (ws, request) => {
 
   ws.on("close", () => {
     console.log("WebSocket connection closed");
+    // Remove the closed WebSocket connection from the map
+    clientsMap.delete(ws);
   });
 });
 
