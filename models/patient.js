@@ -73,6 +73,28 @@ const patientSchema = new mongoose.Schema({
       test_result: String,
     },
   ],
+  anaytics:[
+    {
+      date: Date,
+      heartRate: Number,
+      bloodPressure: String,
+      weight: Number,
+      sugarLevel: Number,
+      temperature: Number,
+      oxygenLevel: Number,
+      stepsWalked: Number,
+      caloriesBurned: Number,
+      sleepDuration: Number,
+      waterIntake: Number,
+      caloriesIntake: Number,
+      callTime: Number,
+      videoCallTime: Number,
+      screenTIme: Number,
+      messageCount: Number,
+      medicineTaken: Number,
+      medicineMissed: Number,
+    }
+  ]
 });
 
 const Patient = mongoose.model("Patient", patientSchema);
