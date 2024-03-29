@@ -35,7 +35,7 @@ const getEngagementScore = async (req, res) => {
         res.status(200).send(response.data);
       });
   } catch (error) {
-    res.status(500).send("Error retrieving engagement score");
+    res.status(500).send(error.message);
   }
 };
 
