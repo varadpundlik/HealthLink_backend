@@ -7,5 +7,5 @@ doctorRouter.post("/register", doctorController.registerDoctor);
 doctorRouter.get("/current", validatetoken,doctorController.currentDoctor);
 doctorRouter.get("/appointment",validatetoken,doctorController.getAppointment);
 doctorRouter.post("/appointment-notes",doctorController.addAppointmentNotes);
-
+doctorRouter.put("/appointmentUpdate", doctorController.setAppointment);
 module.exports = doctorRouter;
