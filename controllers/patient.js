@@ -44,8 +44,8 @@ const bookAppointment = async (req, res) => {
       return res.status(404).send("Patient not found");
     }
 
-    const appointment = { ...req.body };
-    patient.appointments.push(appointment);
+    const mypatient = { ...req.body };
+    patient.appointments.push(mypatient);
     await patient.save();
 
     return res.status(201).send("Appointment booked successfully");
@@ -53,7 +53,6 @@ const bookAppointment = async (req, res) => {
     return res.status(500).send(e.message);
   }
 };
-
 
 const addMedication = async (req, res) => {
   try {
@@ -90,12 +89,10 @@ const addTest = async (req, res) => {
     patient.test_results.push(newTestResult);
     await patient.save();
 
-    res
-      .status(201)
-      .json({
-        message: "Test result added successfully",
-        testResult: newTestResult,
-      });
+    res.status(201).json({
+      message: "Test result added successfully",
+      testResult: newTestResult,
+    });
   } catch (error) {
     res
       .status(500)
@@ -127,6 +124,81 @@ const deleteById = async (req, res) => {
     return res.status(500).send(e);
   }
 };
+const addAnalytics = async (req, res) => {
+  try {
+    const patients = await Patient.find({});
+    
+    const ptid=-1;
+    patients.forEach((patient) => 
+    {
+      if(req.user.id ==patient._id){
+        ptid=patient._id;
+      }
+    });
+    
+    
+    const {
+      date,
+      heartRate,
+      bloodPressure,
+      weight,
+      sugarLevel,
+      temperature,
+      oxygenLevel,
+      stepsWalked,
+      caloriesBurned,
+      sleepDuration,
+      waterIntake,
+      caloriesIntake,
+      callTime,
+      videoCallTime,
+      screenTIme,
+      messageCount,
+      medicineTaken,
+      medicineMissed,
+    } = req.body;
+    console.log("patient id, ", ptid);
+    const patient = await Patient.findById(ptid);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const newAnalytics = {
+      date,
+      heartRate,
+      bloodPressure,
+      weight,
+      sugarLevel,
+      temperature,
+      oxygenLevel,
+      stepsWalked,
+      caloriesBurned,
+      sleepDuration,
+      waterIntake,
+      caloriesIntake,
+      callTime,
+      videoCallTime,
+      screenTIme,
+      messageCount,
+      medicineTaken,
+      medicineMissed,
+    };
+
+    patient.anaytics.push(newAnalytics);
+    await patient.save();
+
+    return res
+      .status(201)
+      .json({
+        message: "Analytics data added successfully",
+        data: newAnalytics,
+      });
+  } catch (e) {
+    return res
+      .status(500)
+      .json({ message: "Error adding analytics data", error: e.message });
+  }
+};
 
 module.exports = {
   getAll,
@@ -137,4 +209,5 @@ module.exports = {
   updateById,
   deleteById,
   addTest,
+  addAnalytics,
 };
