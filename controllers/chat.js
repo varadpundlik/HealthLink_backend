@@ -11,6 +11,8 @@ const getChatHistory = async (req, res) => {
       ],
     });
     let patient = await Patient.findOne({user:req.params.receiverId});
+    console.log(req.params.receiverId);
+    console.log(patient);
     if (!patient) {
       patient = await Patient.findOne({ user: req.user.id });
     }
