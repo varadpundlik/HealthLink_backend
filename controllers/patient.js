@@ -124,21 +124,53 @@ const deleteById = async (req, res) => {
     return res.status(500).send(e);
   }
 };
+const calculateStreak = (streaks, value, previousDate) => {
+  const currentDate = new Date();
+  const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+
+  if (value > 0 && previousDate) {
+    const diffDays = Math.round(Math.abs((currentDate - new Date(previousDate)) / oneDay));
+    
+    if (diffDays === 1) {
+      streaks += 1;
+    } else if (diffDays > 1) {
+      streaks = 1;
+    }
+  } else {
+    streaks = 0;
+  }
+  
+  return streaks;
+};
 const addAnalytics = async (req, res) => {
   try {
-    console.log("req.user.id ",req.user.id)
     const patient = await Patient.findOne({ user: req.user.id });
-    console.log("patient",patient)
+    
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
-    }
-
+    } 
+    console.log(patient.id)
+    
     const newAnalytics = {
       ...req.body,
     };
 
+    // Check if patient.analytics exists, if not, initialize it
+    if (!patient.analytics) {
+      patient.analytics = [];
+    }
+
     patient.analytics.push(newAnalytics);
+
+    // Calculate maxStreak and currentStreak day-wise
+    // const fieldsToCalculate = ['medicineTaken', 'waterIntake', 'stepsWalked', 'sleepDuration', 'caloriesIntake'];
+    
+    // fieldsToCalculate.forEach(field => {
+    //   patient.streaks[field] = calculateStreak(patient.streaks[field], newAnalytics[field], patient.analytics[patient.analytics.length - 2]?.date);
+    //   patient.maxStraks[field] = Math.max(patient.maxStraks[field], patient.streaks[field]);
+    // });
     await patient.save();
+    console.log(patient)
 
     return res.status(201).json({
       message: "Analytics data added successfully",
@@ -147,6 +179,7 @@ const addAnalytics = async (req, res) => {
   } catch (e) {
     return res.status(500).json({ message: "Error adding analytics data", error: e.message });
   }
+
 };
 
 const getPatientByToken = async (req, res) => {

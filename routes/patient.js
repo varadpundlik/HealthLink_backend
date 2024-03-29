@@ -7,9 +7,9 @@ const PatientRouter = express.Router();
 
 PatientRouter.get("/", PatientController.getAll);
 
-PatientRouter.get("/:id", PatientController.getById);
-
 PatientRouter.get("/me",validatetoken, PatientController.getPatientByToken);
+
+PatientRouter.get("/:id", PatientController.getById);
 
 PatientRouter.post("/", validatetoken, PatientController.create);
 
