@@ -31,7 +31,7 @@ const getEngagementScore = async (req, res) => {
       caloriessthreshold: patient.analytics_thresholds.calories,
     };
     axios
-      .post("https://techfista.onrender/com/generate_engagement_score", data)
+      .post("https://techfista.onrender.com/generate_engagement_score", data)
       .then((response) => {
         res.status(200).send(response.data);
       });
