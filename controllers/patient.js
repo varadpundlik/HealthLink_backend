@@ -145,6 +145,7 @@ const getPatientByToken = async (req, res) => {
 module.exports = {
   getAll,
   getById,
+  getPatientByToken,
   create,
   bookAppointment,
   addMedication,

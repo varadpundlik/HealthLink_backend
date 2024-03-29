@@ -9,6 +9,8 @@ PatientRouter.get("/", PatientController.getAll);
 
 PatientRouter.get("/:id", PatientController.getById);
 
+PatientRouter.get("/me",validatetoken, PatientController.getPatientByToken);
+
 PatientRouter.post("/", validatetoken, PatientController.create);
 
 PatientRouter.post("/appointment",validatetoken , PatientController.bookAppointment);
