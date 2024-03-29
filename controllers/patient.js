@@ -1,5 +1,6 @@
 const Patient = require("../models/patient");
 const constants = require("../constant/index");
+//const Message = require("../models/message");
 
 const { PATIENT_CREATED, PATIENT_DELETED, PATIENT_NOT_FOUND, PATIENT_UPDATED } =
   constants;
@@ -247,6 +248,8 @@ const addAnalytics = async (req, res) => {
     patient.maxStreaks.steps = maxStreaks.steps;
     patient.maxStreaks.sleep = maxStreaks.sleep;
     patient.maxStreaks.calories = maxStreaks.calories;
+
+
 
     await patient.save();
 

@@ -1,6 +1,6 @@
 const WebSocket = require("ws");
 const Message = require("../models/message"); // Assuming you have a Mongoose model for chats
-
+const Patient = require("../models/patient");
 
 const getChatHistory = async (req, res) => {
   try {
@@ -10,7 +10,16 @@ const getChatHistory = async (req, res) => {
         { sender: req.params.receiverId, receiver: req.user.id },
       ],
     });
-    res.status(200).json(chatHistory);
+    let patient = await Patient.findOne({user:req.params.receiverId});
+    if (!patient) {
+      patient = await Patient.findOne({ user: req.user.id });
+    }
+    console.log(patient);
+    if (!patient) {
+      return res.status(404).send("Patient not found");
+    }
+    const analytics = patient.analytics;
+    res.status(200).json({chats:chatHistory,lts_analytics:analytics});
   } catch (error) {
     res.status(500).send("Error retrieving chat history");
   }
