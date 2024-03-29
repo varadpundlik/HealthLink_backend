@@ -91,8 +91,7 @@ const patientSchema = new mongoose.Schema({
       videoCallTime: Number,
       screenTIme: Number,
       messageCount: Number,
-      medicineTaken: Number,
-      medicineMissed: Number,
+      medicineTaken: Boolean,
     },
   ],
   streaks: {

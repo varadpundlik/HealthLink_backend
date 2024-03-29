@@ -152,7 +152,7 @@ const calculateStreaks = async (analytics, userId) => {
 
   analytics.forEach((entry, index) => {
     // Medicine
-    if (entry.medicineTaken !== 0 || entry.medicineMissed !== 0) {
+    if (entry.medicineTaken === true) {
       currentStreaks.medicine++;
       maxStreaks.medicine = Math.max(
         maxStreaks.medicine,
