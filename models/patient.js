@@ -141,10 +141,22 @@ const patientSchema = new mongoose.Schema({
   },
   analytics_thresholds: 
     {
-      water: Number,
-      steps: Number,
-      sleep: Number,
-      calories: Number,
+      water:{ 
+        type:Number,
+        default: 4
+      },
+      steps:{
+        type:Number,
+        default: 3000
+      },
+      sleep:{
+        type: Number,
+        default: 8
+      },
+      calories:{
+        type: Number,
+        default: 2000
+      }
     },
 });
 
