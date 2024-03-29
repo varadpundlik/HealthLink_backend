@@ -160,7 +160,29 @@ const getPatientByToken = async (req, res) => {
   catch (e) {
     return res.status(500).send(e);
   }
-}
+};
+
+
+
+const checkIfPatientExists = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const existingPatient = await Patient.findOne({ user: userId });
+    if (existingPatient) {
+      
+      return res.status(200).json({ exists: true });
+    } else {
+      
+      return res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    console.error('Error checking if patient exists:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports = { checkIfPatientExists };
+
 
 
 module.exports = {
@@ -174,5 +196,6 @@ module.exports = {
   deleteById,
   addTest,
   getPatientByToken,
-  addAnalytics
+  addAnalytics,
+  checkIfPatientExists
 };

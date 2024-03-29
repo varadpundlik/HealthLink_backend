@@ -23,4 +23,6 @@ PatientRouter.put("/:id", PatientController.updateById);
 
 PatientRouter.delete("/:id", PatientController.deleteById);
 
+PatientRouter.post("/check",validatetoken,PatientController.checkIfPatientExists);
+
 module.exports = PatientRouter;
