@@ -10,7 +10,7 @@ const getChatHistory = async (req, res) => {
         { sender: req.params.receiverId, receiver: req.user.id },
       ],
     });
-    let patient = await Patient.findOne({user:req.params.receiverId});
+    let patient = await Patient.findById(req.params.receiverId);
     console.log(req.params.receiverId);
     console.log(patient);
     if (!patient) {
