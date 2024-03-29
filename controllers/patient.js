@@ -208,5 +208,4 @@ module.exports = {
   addTest,
   getPatientByToken,
   addAnalytics,
-  getAnalytics
 };
