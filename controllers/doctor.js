@@ -126,6 +126,33 @@ const addAppointmentNotes = async (req, res) => {
   }
 };
 
+const setAppointment = async (req, res) => {
+  try {
+    const { patientId, appointmentId, date } = req.body;
+
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      return res.status(404).send("Patient not found");
+    }
+
+    const appointment = patient.appointments.find(appt => appt._id == appointmentId);
+    if (!appointment) {
+      return res.status(404).send("Appointment not found");
+    }
+
+    appointment.date = date;
+
+    await patient.save();
+
+    return res.status(200).send("Appointment updated successfully");
+  } catch (error) {
+    return res.status(500).send("Internal Server Error: " + error.message);
+  }
+};
+
+
+
+
 const currentDoctor = async (req, res) => {
   try {
     res.json(req.user);
@@ -134,4 +161,6 @@ const currentDoctor = async (req, res) => {
   }
 };
 
-module.exports = { registerDoctor, loginDoctor, currentDoctor, getAppointment, addAppointmentNotes };
+
+
+module.exports = { registerDoctor, loginDoctor, currentDoctor, getAppointment, addAppointmentNotes, setAppointment };
