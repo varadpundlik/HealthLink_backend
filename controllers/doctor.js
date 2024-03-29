@@ -155,7 +155,7 @@ const setAppointment = async (req, res) => {
 const addAnalyticsThreosholds = async (req, res) => {
   try {
     const patient = await Patient.findById(req.params.id);
-
+    console.log(patient)
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
@@ -164,8 +164,8 @@ const addAnalyticsThreosholds = async (req, res) => {
     const newAnalyticsThreosholds = {
       ...req.body,
     };
-    console.log(newAnalyticsThreosholds.analytics_thresholds);
-    patient.analytics_thresholds=newAnalyticsThreosholds.analytics_thresholds[0];
+    console.log(newAnalyticsThreosholds);
+    patient.analytics_thresholds=newAnalyticsThreosholds;
     await patient.save();
     console.log(patient)
 
