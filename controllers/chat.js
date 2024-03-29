@@ -26,7 +26,9 @@ wss.on("connection", async (ws, request) => {
   // Extract sender and receiver IDs from query parameters
   const urlParams = new URLSearchParams(request.url.split("?")[1]);
   const senderId = urlParams.get("sender");
+  console.log("sender",senderId);
   const receiverId = urlParams.get("receiver");
+  console.log("receiver",receiverId);
 
   ws.on("message", async (data) => {
     try {
@@ -38,6 +40,7 @@ wss.on("connection", async (ws, request) => {
         message: messageData.message,
         timestamp: new Date(),
       });
+      console.log(chatMessage);
       await chatMessage.save();
       // Broadcast the message to the sender and receiver
       ws.send(JSON.stringify(chatMessage));
@@ -47,6 +50,7 @@ wss.on("connection", async (ws, request) => {
           const clientParams = new URLSearchParams(client.upgradeReq.url.split("?")[1]);
           if (clientParams.get("sender") === receiverId && clientParams.get("receiver") === senderId) {
             client.send(JSON.stringify(chatMessage));
+            console.log("message sent to",clientParams.get("sender"));
           }
         }
       });
