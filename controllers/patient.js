@@ -102,16 +102,22 @@ const addTest = async (req, res) => {
 
 const updateById = async (req, res) => {
   try {
-    const updatedData = { ...req.body };
-    const update = await Patient.updateOne({ _id: req.params.id }, updatedData);
+    const { id } = req.params;
+    const { age, contactNumber, healthConditions} = req.body; 
+    const updateFields = { age, contactNumber, healthConditions };
+
+    const update = await Patient.findByIdAndUpdate(id, updateFields, { new: true });
+
     if (!update) {
       return res.status(404).send(PATIENT_NOT_FOUND);
     }
-    return res.status(201).send(PATIENT_UPDATED);
+
+    return res.status(200).send(PATIENT_UPDATED);
   } catch (e) {
     return res.status(500).send(e);
   }
 };
+
 
 const deleteById = async (req, res) => {
   try {
