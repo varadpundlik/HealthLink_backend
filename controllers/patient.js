@@ -126,77 +126,26 @@ const deleteById = async (req, res) => {
 };
 const addAnalytics = async (req, res) => {
   try {
-    const patients = await Patient.find({});
-    
-    const ptid=-1;
-    patients.forEach((patient) => 
-    {
-      if(req.user.id ==patient._id){
-        ptid=patient._id;
-      }
-    });
-    
-    
-    const {
-      date,
-      heartRate,
-      bloodPressure,
-      weight,
-      sugarLevel,
-      temperature,
-      oxygenLevel,
-      stepsWalked,
-      caloriesBurned,
-      sleepDuration,
-      waterIntake,
-      caloriesIntake,
-      callTime,
-      videoCallTime,
-      screenTIme,
-      messageCount,
-      medicineTaken,
-      medicineMissed,
-    } = req.body;
-    console.log("patient id, ", ptid);
-    const patient = await Patient.findById(ptid);
+    console.log("req.user.id ",req.user.id)
+    const patient = await Patient.findOne({ user: req.user.id });
+    console.log("patient",patient)
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
     const newAnalytics = {
-      date,
-      heartRate,
-      bloodPressure,
-      weight,
-      sugarLevel,
-      temperature,
-      oxygenLevel,
-      stepsWalked,
-      caloriesBurned,
-      sleepDuration,
-      waterIntake,
-      caloriesIntake,
-      callTime,
-      videoCallTime,
-      screenTIme,
-      messageCount,
-      medicineTaken,
-      medicineMissed,
+      ...req.body,
     };
 
-    patient.anaytics.push(newAnalytics);
+    patient.analytics.push(newAnalytics);
     await patient.save();
 
-    return res
-      .status(201)
-      .json({
-        message: "Analytics data added successfully",
-        data: newAnalytics,
-      });
+    return res.status(201).json({
+      message: "Analytics data added successfully",
+      data: newAnalytics,
+    });
   } catch (e) {
-    return res
-      .status(500)
-      .json({ message: "Error adding analytics data", error: e.message });
+    return res.status(500).json({ message: "Error adding analytics data", error: e.message });
   }
 };
 
@@ -225,4 +174,5 @@ module.exports = {
   deleteById,
   addTest,
   getPatientByToken,
+  addAnalytics
 };
