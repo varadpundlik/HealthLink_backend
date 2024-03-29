@@ -130,33 +130,83 @@ const deleteById = async (req, res) => {
     return res.status(500).send(e);
   }
 };
-const calculateStreak = (streaks, value, previousDate) => {
-  const currentDate = new Date();
-  const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+const calculateStreaks = async (analytics, userId) => {
+  const patient = await Patient.findOne({ user: userId });
 
-  if (value > 0 && previousDate) {
-    const diffDays = Math.round(Math.abs((currentDate - new Date(previousDate)) / oneDay));
-    
-    if (diffDays === 1) {
-      streaks += 1;
-    } else if (diffDays > 1) {
-      streaks = 1;
+  const maxStreaks = {
+    medicine: 0,
+    water: 0,
+    steps: 0,
+    sleep: 0,
+    calories: 0,
+  };
+
+  const currentStreaks = {
+    medicine: 0,
+    water: 0,
+    steps: 0,
+    sleep: 0,
+    calories: 0,
+  };
+
+  analytics.forEach((entry, index) => {
+    // Medicine
+    if (entry.medicineTaken !== 0 || entry.medicineMissed !== 0) {
+      currentStreaks.medicine++;
+      maxStreaks.medicine = Math.max(
+        maxStreaks.medicine,
+        currentStreaks.medicine
+      );
+    } else {
+      currentStreaks.medicine = 0;
     }
-  } else {
-    streaks = 0;
-  }
-  
-  return streaks;
+
+    if (entry.waterIntake > patient.analytics_thresholds.water) {
+      currentStreaks.water++;
+      maxStreaks.water = Math.max(maxStreaks.water, currentStreaks.water);
+    } else {
+      currentStreaks.water = 0;
+    }
+
+    // Steps
+    if (entry.stepsWalked > patient.analytics_thresholds.steps) {
+      currentStreaks.steps++;
+      maxStreaks.steps = Math.max(maxStreaks.steps, currentStreaks.steps);
+    } else {
+      currentStreaks.steps = 0;
+    }
+
+    // Sleep
+    if (entry.sleepDuration > patient.analytics_thresholds.sleep) {
+      currentStreaks.sleep++;
+      maxStreaks.sleep = Math.max(maxStreaks.sleep, currentStreaks.sleep);
+    } else {
+      currentStreaks.sleep = 0;
+    }
+
+    // Calories
+    if (entry.caloriesIntake > patient.analytics_thresholds.calories) {
+      currentStreaks.calories++;
+      maxStreaks.calories = Math.max(
+        maxStreaks.calories,
+        currentStreaks.calories
+      );
+    } else {
+      currentStreaks.calories = 0;
+    }
+  });
+
+  return { currentStreaks, maxStreaks };
 };
+
 const addAnalytics = async (req, res) => {
   try {
     const patient = await Patient.findOne({ user: req.user.id });
-    
+
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
-    } 
-    console.log(patient.id)
-    
+    }
+
     const newAnalytics = {
       ...req.body,
     };
@@ -168,25 +218,45 @@ const addAnalytics = async (req, res) => {
 
     patient.analytics.push(newAnalytics);
 
-    // Calculate maxStreak and currentStreak day-wise
-    // const fieldsToCalculate = ['medicineTaken', 'waterIntake', 'stepsWalked', 'sleepDuration', 'caloriesIntake'];
-    
-    // fieldsToCalculate.forEach(field => {
-    //   patient.streaks[field] = calculateStreak(patient.streaks[field], newAnalytics[field], patient.analytics[patient.analytics.length - 2]?.date);
-    //   patient.maxStraks[field] = Math.max(patient.maxStraks[field], patient.streaks[field]);
-    // });
+    // Calculate streaks
+    const { currentStreaks, maxStreaks } = await calculateStreaks(
+      patient.analytics,
+      req.user.id
+    );
+
+    // Initialize patient streaks if undefined
+    if (!patient.streaks) {
+      patient.streaks = {};
+    }
+
+    // Initialize patient max streaks if undefined
+    if (!patient.maxStreaks) {
+      patient.maxStreaks = {};
+    }
+
+    // Update patient streaks
+    patient.streaks.medicine = currentStreaks.medicine;
+    patient.streaks.water = currentStreaks.water;
+    patient.streaks.steps = currentStreaks.steps;
+    patient.streaks.sleep = currentStreaks.sleep;
+    patient.streaks.calories = currentStreaks.calories;
+
+    // Update patient max streaks
+    patient.maxStreaks.medicine = maxStreaks.medicine;
+    patient.maxStreaks.water = maxStreaks.water;
+    patient.maxStreaks.steps = maxStreaks.steps;
+    patient.maxStreaks.sleep = maxStreaks.sleep;
+    patient.maxStreaks.calories = maxStreaks.calories;
+
     await patient.save();
-    console.log(patient)
 
-    return res.status(201).json({
-      message: "Analytics data added successfully",
-      data: newAnalytics,
-    });
-  } catch (e) {
-    return res.status(500).json({ message: "Error adding analytics data", error: e.message });
+    res.status(200).json({ message: "Analytics added successfully", data: patient });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
   }
-
 };
+
 
 const getPatientByToken = async (req, res) => {
   try {
@@ -195,8 +265,7 @@ const getPatientByToken = async (req, res) => {
       return res.status(404).send(PATIENT_NOT_FOUND);
     }
     return res.status(200).json(patient);
-  }
-  catch (e) {
+  } catch (e) {
     return res.status(500).send(e);
   }
 };

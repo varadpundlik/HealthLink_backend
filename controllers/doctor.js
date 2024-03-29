@@ -152,7 +152,34 @@ const setAppointment = async (req, res) => {
 
 
 
+const addAnalyticsThreosholds = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
 
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+    console.log(patient.id);
+    
+    const newAnalyticsThreosholds = {
+      ...req.body,
+    };
+    console.log(newAnalyticsThreosholds.analytics_thresholds);
+    patient.analytics_thresholds=newAnalyticsThreosholds.analytics_thresholds[0];
+    await patient.save();
+    console.log(patient)
+
+    res
+      .status(200)
+      .json({
+        message: "Analytics Thrsholds added successfully",
+        data: patient,
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 const currentDoctor = async (req, res) => {
   try {
     res.json(req.user);
@@ -163,4 +190,4 @@ const currentDoctor = async (req, res) => {
 
 
 
-module.exports = { registerDoctor, loginDoctor, currentDoctor, getAppointment, addAppointmentNotes, setAppointment };
+module.exports = { registerDoctor, loginDoctor, currentDoctor, getAppointment, addAppointmentNotes, setAppointment,addAnalyticsThreosholds };

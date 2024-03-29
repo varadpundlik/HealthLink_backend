@@ -10,9 +10,9 @@ const patientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  age: {
-    type: Number,
-
+  dateOfBirth: {
+    type: Date,
+    required: true,
   },
   gender: {
     type: String,
@@ -139,6 +139,13 @@ const patientSchema = new mongoose.Schema({
       default: 0,
     },
   },
+  analytics_thresholds: 
+    {
+      water: Number,
+      steps: Number,
+      sleep: Number,
+      calories: Number,
+    },
 });
 
 const Patient = mongoose.model("Patient", patientSchema);
