@@ -199,8 +199,8 @@ const getPatientByToken = async (req, res) => {
 
 const checkIfPatientExists = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const existingPatient = await Patient.findOne({ user: userId });
+   
+    const existingPatient = await Patient.findOne({ user: req.user.id });
     if (existingPatient) {
       
       return res.status(200).json({ exists: true });

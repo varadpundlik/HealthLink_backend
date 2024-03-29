@@ -8,8 +8,8 @@ const PatientRouter = express.Router();
 PatientRouter.get("/", PatientController.getAll);
 
 PatientRouter.get("/me",validatetoken, PatientController.getPatientByToken);
+PatientRouter.get("/check",validatetoken,PatientController.checkIfPatientExists);
 
-PatientRouter.get("/:id", PatientController.getById);
 
 PatientRouter.post("/", validatetoken, PatientController.create);
 
@@ -23,6 +23,6 @@ PatientRouter.put("/:id", PatientController.updateById);
 
 PatientRouter.delete("/:id", PatientController.deleteById);
 
-PatientRouter.get("/check",validatetoken,PatientController.checkIfPatientExists);
+PatientRouter.get("/:id", PatientController.getById);
 
 module.exports = PatientRouter;
