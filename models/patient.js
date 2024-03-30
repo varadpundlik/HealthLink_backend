@@ -160,6 +160,10 @@ const patientSchema = new mongoose.Schema({
     type: Number,
     default: 5,
   },
+  health_score: {
+    type: Number,
+    default: 5,
+  },
 });
 
 const Patient = mongoose.model("Patient", patientSchema);

@@ -1,6 +1,5 @@
 const express = require("express");
 const PatientController = require("../controllers/patient");
-const {getEngagementScore} = require("../controllers/scoreService");
 const Patient = require("../models/patient");
 const validatetoken = require("../middleware/validateTokenhandler");
 
@@ -24,7 +23,6 @@ PatientRouter.put("/:id", PatientController.updateById);
 
 PatientRouter.delete("/:id", PatientController.deleteById);
 
-PatientRouter.get("/:id/score", getEngagementScore);
 PatientRouter.get("/:id", PatientController.getById);
 
 module.exports = PatientRouter;
