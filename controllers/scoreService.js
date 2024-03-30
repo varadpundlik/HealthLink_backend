@@ -110,7 +110,8 @@ const getEngagementScore = async (req, res) => {
     let calories = [];
     
     patient.analytics.forEach((element) => {
-      medicines.push(element.medicineTaken);
+      if(element.medicineTaken != undefined )medicines.push(element.medicineTaken);
+      else medicines.push(false);
       water.push(element.waterIntake);
       sleep.push(element.sleepDuration);
       steps.push(element.stepsWalked);
