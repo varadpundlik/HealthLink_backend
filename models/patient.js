@@ -152,7 +152,7 @@ const patientSchema = new mongoose.Schema({
     },
     calories: {
       type: Number,
-      default: 2000,
+      default: 200,
     },
   },
   engagement_score: {

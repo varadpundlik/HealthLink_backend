@@ -214,11 +214,12 @@ function calculateEngagementScore(
   calltime, 
   messages
 ) {
+  console.log("----into func ----");
   let scrrenTimeArray = [];
   let callTimeArray = [];
   let medicationArray = [];
   let messageArray = [];
-  let n = scrrenTimeArray.length;
+  let n = Scrrentime.length;
 
   let cnt = 0;
   let score = 0;
@@ -244,8 +245,10 @@ function calculateEngagementScore(
   }
   cnt=0;
   score=0;
+  console.log("n ",n)
   for (let i = 0; i < n; i++) 
   {
+    console.log("score ",score)
     if (cnt < 7) 
     {
       cnt = 1;
@@ -461,20 +464,16 @@ const addAnalytics = async (req, res) => {
       watersthreshold: patient.analytics_thresholds.water,
       caloriessthreshold: patient.analytics_thresholds.calories
     };
-    //console.log(data)
 
-    const engagementScore = calculateEngagementScore(
+    const engagementScore = await calculateEngagementScore(
       medicines,
       screenTime,
       callTime,
       messageCounts
     );
-    console.log(screenTime)
-    console.log(callTime)
-    console.log(messageCounts)
-    console.log(engagementScore)
+
     
-    const response = calculateHealthScore(
+    const response = await calculateHealthScore(
       data.medicineDuration,
       data.stepsArray,
       data.caloriesArray,
