@@ -461,6 +461,7 @@ const addAnalytics = async (req, res) => {
       watersthreshold: patient.analytics_thresholds.water,
       caloriessthreshold: patient.analytics_thresholds.calories
     };
+    console.log(data)
 
     const engagementScore = calculateEngagementScore(
       medicines,
@@ -486,7 +487,7 @@ const addAnalytics = async (req, res) => {
 
     res.status(200).json({ message: "Analytics added successfully", data: patient });
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.status(500).json({ message: "Server Error" });
   }
 };
