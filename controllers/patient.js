@@ -434,13 +434,20 @@ const addAnalytics = async (req, res) => {
     patient.analytics.forEach((element) => {
       if(element.medicineTaken != undefined )medicines.push(element.medicineTaken);
       else medicines.push(false);
-      water.push(element.waterIntake);
-      sleep.push(element.sleepDuration);
-      steps.push(element.stepsWalked);
-      calories.push(element.caloriesIntake);
-      screenTime.push(element.screenTime);
-      callTime.push(element.callTime);
-      messageCounts.push(element.messageCount);
+      if(element.waterIntake != undefined )water.push(element.waterIntake);
+      else water.push(0);
+      if(element.sleepDuration != undefined )sleep.push(element.sleepDuration);
+      else sleep.push(0);
+      if(element.stepsWalked != undefined )steps.push(element.stepsWalked);
+      else steps.push(0);
+      if(element.caloriesBurned != undefined )calories.push(element.caloriesBurned);
+      else calories.push(0);
+      if(element.screenTime != undefined )screenTime.push(element.screenTime);
+      else screenTime.push(0);
+      if(element.callTime != undefined )callTime.push(element.callTime);
+      else callTime.push(0);
+      if(element.messageCount != undefined )messageCounts.push(element.messageCount);
+      else messageCounts.push(0);
     });
     
     const data = {
@@ -454,6 +461,7 @@ const addAnalytics = async (req, res) => {
       watersthreshold: patient.analytics_thresholds.water,
       caloriessthreshold: patient.analytics_thresholds.calories
     };
+    //console.log(data)
 
     const engagementScore = calculateEngagementScore(
       medicines,
@@ -461,6 +469,10 @@ const addAnalytics = async (req, res) => {
       callTime,
       messageCounts
     );
+    console.log(screenTime)
+    console.log(callTime)
+    console.log(messageCounts)
+    console.log(engagementScore)
     
     const response = calculateHealthScore(
       data.medicineDuration,
@@ -479,7 +491,7 @@ const addAnalytics = async (req, res) => {
 
     res.status(200).json({ message: "Analytics added successfully", data: patient });
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.status(500).json({ message: "Server Error" });
   }
 };
