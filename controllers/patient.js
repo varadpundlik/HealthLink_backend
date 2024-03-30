@@ -461,7 +461,7 @@ const addAnalytics = async (req, res) => {
       watersthreshold: patient.analytics_thresholds.water,
       caloriessthreshold: patient.analytics_thresholds.calories
     };
-    console.log(data)
+    //console.log(data)
 
     const engagementScore = calculateEngagementScore(
       medicines,
@@ -469,6 +469,10 @@ const addAnalytics = async (req, res) => {
       callTime,
       messageCounts
     );
+    console.log(screenTime)
+    console.log(callTime)
+    console.log(messageCounts)
+    console.log(engagementScore)
     
     const response = calculateHealthScore(
       data.medicineDuration,
