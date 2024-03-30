@@ -138,25 +138,28 @@ const patientSchema = new mongoose.Schema({
       default: 0,
     },
   },
-  analytics_thresholds: 
-    {
-      water:{ 
-        type:Number,
-        default: 4
-      },
-      steps:{
-        type:Number,
-        default: 3000
-      },
-      sleep:{
-        type: Number,
-        default: 8
-      },
-      calories:{
-        type: Number,
-        default: 2000
-      }
+  analytics_thresholds: {
+    water: {
+      type: Number,
+      default: 4,
     },
+    steps: {
+      type: Number,
+      default: 3000,
+    },
+    sleep: {
+      type: Number,
+      default: 8,
+    },
+    calories: {
+      type: Number,
+      default: 2000,
+    },
+  },
+  engagement_score: {
+    type: Number,
+    default: 5,
+  },
 });
 
 const Patient = mongoose.model("Patient", patientSchema);

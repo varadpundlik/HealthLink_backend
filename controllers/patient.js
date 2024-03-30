@@ -199,6 +199,101 @@ const calculateStreaks = async (analytics, userId) => {
 
   return { currentStreaks, maxStreaks };
 };
+const axios = require('axios');
+
+function average(arr) {
+  if (!arr.length) {
+    return 0;
+  }
+  return arr.reduce((sum, val) => sum + val, 0) / arr.length;
+}
+
+function calculateEngagementScore(
+  medicationDuration, 
+  stepsWalked, 
+  caloriesBurned, 
+  sleepDuration, 
+  waterIntake, 
+  step, 
+  sleep, 
+  water, 
+  calories
+) {
+  let stepsArray = [];
+  let sleepArray = [];
+  let waterArray = [];
+  let caloriesArray = [];
+  let medicationArray = [];
+  
+  let n = stepsWalked.length;
+  let cnt = 0;
+  let score = 0;
+  
+  for (let i = 0; i < n; i++) {
+    if (cnt < 7) {
+      cnt = 1;
+      let temp = score / 7;
+      medicationArray.push(temp);
+      score = 0;
+      
+      if (medicationDuration[i]) {
+        score++;
+      }
+    } else {
+      if (medicationDuration[i]) {
+        score++;
+      }
+    }
+    
+    cnt++;
+  }
+  
+  for (let i = 0; i < n; i++) {
+    let stepsRate = 100;
+    let sleepRate = 100;
+    let waterRate = 100;
+    let caloriesRate = 100;
+    
+    if (stepsWalked[i] === step) {
+      stepsRate = 1;
+    } else {
+      stepsRate = Math.abs(stepsWalked[i] - step) / step;
+    }
+    
+    if (caloriesBurned[i] === calories) {
+      caloriesRate = 1;
+    } else {
+      caloriesRate = Math.abs(caloriesBurned[i] - calories) / calories;
+    }
+    
+    if (sleepDuration[i] === sleep) {
+      sleepRate = 1;
+    } else {
+      sleepRate = Math.abs(sleepDuration[i] - sleep) / sleep;
+    }
+    
+    if (waterIntake[i] === water) {
+      waterRate = 1;
+    } else {
+      waterRate = Math.abs(waterIntake[i] - water) / water;
+    }
+    
+    stepsArray.push(stepsRate);
+    sleepArray.push(sleepRate);
+    waterArray.push(waterRate);
+    caloriesArray.push(caloriesRate);
+  }
+  
+  const stepsAvg = average(stepsArray);
+  const sleepAvg = average(sleepArray);
+  const waterAvg = average(waterArray);
+  const caloriesAvg = average(caloriesArray);
+  const medicationAvg = average(medicationArray);
+  
+  const engagementScore = ((stepsAvg + sleepAvg + waterAvg + caloriesAvg + medicationAvg) / 5) * 10;
+  
+  return engagementScore;
+}
 
 const addAnalytics = async (req, res) => {
   try {
@@ -212,11 +307,6 @@ const addAnalytics = async (req, res) => {
       ...req.body,
     };
 
-    // // Check if patient.analytics exists, if not, initialize it
-    // if (!patient.analytics) {
-    //   patient.analytics = [];
-    // }
-
     patient.analytics.push(newAnalytics);
 
     // Calculate streaks
@@ -228,32 +318,57 @@ const addAnalytics = async (req, res) => {
     console.log(currentStreaks)
     console.log(maxStreaks)
 
-    // // Initialize patient streaks if undefined
-    // if (!patient.streaks) {
-    //   patient.streaks = {};
-    // }
 
-    // // Initialize patient max streaks if undefined
-    // if (!patient.maxStreaks) {
-    //   patient.maxStreaks = {};
-    // }
-
-    // Update patient streaks
     patient.streaks.medicine = currentStreaks.medicine;
     patient.streaks.water = currentStreaks.water;
     patient.streaks.steps = currentStreaks.steps;
     patient.streaks.sleep = currentStreaks.sleep;
     patient.streaks.calories = currentStreaks.calories;
 
-    // Update patient max streaks
     patient.maxStreaks.medicine = maxStreaks.medicine;
     patient.maxStreaks.water = maxStreaks.water;
     patient.maxStreaks.steps = maxStreaks.steps;
     patient.maxStreaks.sleep = maxStreaks.sleep;
     patient.maxStreaks.calories = maxStreaks.calories;
-
-
-
+    let medicines = [];
+    let water = [];
+    let sleep = [];
+    let steps = [];
+    let calories = [];
+    
+    patient.analytics.forEach((element) => {
+      if(element.medicineTaken != undefined )medicines.push(element.medicineTaken);
+      else medicines.push(false);
+      water.push(element.waterIntake);
+      sleep.push(element.sleepDuration);
+      steps.push(element.stepsWalked);
+      calories.push(element.caloriesIntake);
+    });
+    
+    const data = {
+      medicineDuration: medicines,  
+      stepsArray: steps,
+      sleepArray: sleep,
+      waterArray: water,
+      caloriesArray: calories,
+      stepthreshold: patient.analytics_thresholds.steps,
+      sleepthreshold: patient.analytics_thresholds.sleep,
+      watersthreshold: patient.analytics_thresholds.water,
+      caloriessthreshold: patient.analytics_thresholds.calories
+    };
+    
+    const response = calculateEngagementScore(
+      data.medicineDuration,
+      data.stepsArray,
+      data.caloriesArray,
+      data.sleepArray,
+      data.waterArray,
+      data.stepthreshold,
+      data.sleepthreshold,
+      data.watersthreshold,
+      data.caloriessthreshold
+    );
+    patient.engagement_score=response;
     await patient.save();
 
     res.status(200).json({ message: "Analytics added successfully", data: patient });
