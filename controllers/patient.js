@@ -68,7 +68,7 @@ const addMedication = async (req, res) => {
     await patient.save();
     return res.status(201).send("Medication added successfully");
   } catch (e) {
-    return res.status(500).send(e);
+    return res.status(500).send(e.message);
   }
 };
 const addTest = async (req, res) => {
