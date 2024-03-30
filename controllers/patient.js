@@ -1,6 +1,6 @@
 const Patient = require("../models/patient");
 const constants = require("../constant/index");
-//const Message = require("../models/message");
+const Message = require("../models/message");
 
 const { PATIENT_CREATED, PATIENT_DELETED, PATIENT_NOT_FOUND, PATIENT_UPDATED } =
   constants;
@@ -395,6 +395,14 @@ const addAnalytics = async (req, res) => {
       ...req.body,
     };
 
+    // Calculate message count
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const messageCount = await Message.countDocuments({
+      $or: [{ sender: req.user.id }, { receiver: req.user.id }],
+      createdAt: { $gte: today },
+    });
+    newAnalytics.messageCount = messageCount;
     patient.analytics.push(newAnalytics);
 
     // Calculate streaks
@@ -419,6 +427,9 @@ const addAnalytics = async (req, res) => {
     let sleep = [];
     let steps = [];
     let calories = [];
+    let screenTime = [];
+    let callTime = [];
+    let messageCounts = [];
     
     patient.analytics.forEach((element) => {
       if(element.medicineTaken != undefined )medicines.push(element.medicineTaken);
@@ -427,6 +438,9 @@ const addAnalytics = async (req, res) => {
       sleep.push(element.sleepDuration);
       steps.push(element.stepsWalked);
       calories.push(element.caloriesIntake);
+      screenTime.push(element.screenTime);
+      callTime.push(element.callTime);
+      messageCounts.push(element.messageCount);
     });
     
     const data = {
@@ -440,6 +454,13 @@ const addAnalytics = async (req, res) => {
       watersthreshold: patient.analytics_thresholds.water,
       caloriessthreshold: patient.analytics_thresholds.calories
     };
+
+    const engagementScore = calculateEngagementScore(
+      medicines,
+      screenTime,
+      callTime,
+      messageCounts
+    );
     
     const response = calculateHealthScore(
       data.medicineDuration,
@@ -453,6 +474,7 @@ const addAnalytics = async (req, res) => {
       data.caloriessthreshold
     );
     patient.health_score=response;
+    patient.engagement_score=engagementScore;
     await patient.save();
 
     res.status(200).json({ message: "Analytics added successfully", data: patient });
