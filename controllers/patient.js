@@ -210,29 +210,24 @@ function average(arr) {
 
 function calculateEngagementScore(
   medicationDuration, 
-  stepsWalked, 
-  caloriesBurned, 
-  sleepDuration, 
-  waterIntake, 
-  step, 
-  sleep, 
-  water, 
-  calories
+  Scrrentime, 
+  calltime, 
+  messages
 ) {
-  let stepsArray = [];
-  let sleepArray = [];
-  let waterArray = [];
-  let caloriesArray = [];
+  let scrrenTimeArray = [];
+  let callTimeArray = [];
   let medicationArray = [];
-  
-  let n = stepsWalked.length;
+  let messageArray = [];
+  let n = scrrenTimeArray.length;
+
   let cnt = 0;
   let score = 0;
   
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < n; i++) 
+  {
     if (cnt < 7) {
       cnt = 1;
-      let temp = score / 7;
+      let temp = score;
       medicationArray.push(temp);
       score = 0;
       
@@ -247,54 +242,60 @@ function calculateEngagementScore(
     
     cnt++;
   }
-  
-  for (let i = 0; i < n; i++) {
-    let stepsRate = 100;
-    let sleepRate = 100;
-    let waterRate = 100;
-    let caloriesRate = 100;
-    
-    if (stepsWalked[i] === step) {
-      stepsRate = 1;
+  cnt=0;
+  score=0;
+  for (let i = 0; i < n; i++) 
+  {
+    if (cnt < 7) 
+    {
+      cnt = 1;
+      scrrenTimeArray.push(score/50);
+      score =Scrrentime[i] ;
     } else {
-      stepsRate = Math.abs(stepsWalked[i] - step) / step;
+        score=score+Scrrentime[i];
+        cnt++;
+      
     }
-    
-    if (caloriesBurned[i] === calories) {
-      caloriesRate = 1;
-    } else {
-      caloriesRate = Math.abs(caloriesBurned[i] - calories) / calories;
-    }
-    
-    if (sleepDuration[i] === sleep) {
-      sleepRate = 1;
-    } else {
-      sleepRate = Math.abs(sleepDuration[i] - sleep) / sleep;
-    }
-    
-    if (waterIntake[i] === water) {
-      waterRate = 1;
-    } else {
-      waterRate = Math.abs(waterIntake[i] - water) / water;
-    }
-    
-    stepsArray.push(stepsRate);
-    sleepArray.push(sleepRate);
-    waterArray.push(waterRate);
-    caloriesArray.push(caloriesRate);
   }
+  cnt=0;
+  score=0;
+  for (let i = 0; i < n; i++) 
+  {
+    if (cnt < 7) 
+    {
+      cnt = 1;
+      callTimeArray.push(score/60);
+      score =calltime[i] ;
+    } else {
+        score=score+calltime[i];
+        cnt++;
+      
+    }
+  }
+  cnt=0;
+  score=0;
+  for (let i = 0; i < n; i++) 
+  {
+    if (cnt < 7) 
+    {
+      cnt = 1;
+      messageArray.push(score/30);
+      score =messages[i] ;
+    } else {
+        score=score+messages[i];
+        cnt++;
+      
+    }
+  }
+  const medAvg = average(medicationArray);
+  const screenAvg = average(scrrenTimeArray);
+  const callingAvg = average(callTimeArray);
+  const messageAvg = average(messageArray);
   
-  const stepsAvg = average(stepsArray);
-  const sleepAvg = average(sleepArray);
-  const waterAvg = average(waterArray);
-  const caloriesAvg = average(caloriesArray);
-  const medicationAvg = average(medicationArray);
-  
-  const engagementScore = ((stepsAvg + sleepAvg + waterAvg + caloriesAvg + medicationAvg) / 5) * 10;
+  const engagementScore = ((medAvg + screenAvg + callingAvg + messageAvg ) / 4) * 10;
   
   return engagementScore;
 }
-
 function calculateHealthScore(
   medicationDuration, 
   stepsWalked, 
